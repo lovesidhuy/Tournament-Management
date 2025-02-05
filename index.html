@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>SYNC SPACE Socket.IO chat app - Tournament buddy</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 1rem;
+      font-family: "Poppins", sans-serif;
+      background: linear-gradient(135deg, #2980b9, #8e44ad);
+      color: white;
+      display: flex;
+      gap: 1rem;
+      height: 100vh;
+      box-sizing: border-box;
+    }
+
+    .side-panel {
+      flex: 0 0 300px;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 1rem;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    .panel-header {
+      padding: 1rem;
+      font-size: 1.25rem;
+      font-weight: bold;
+      background: rgba(255, 255, 255, 0.2);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.3);
+    }
+
+    .panel-content {
+      flex-grow: 1;
+      overflow-y: auto;
+      padding: 1rem;
+    }
+
+    .query-section {
+      background: rgba(255, 255, 255, 0.15);
+      border-radius: 0.5rem;
+      padding: 1rem;
+      margin-bottom: 1rem;
+    }
+
+    .query-section h3 {
+      margin: 0 0 0.5rem 0;
+      color: #2ecc71;
+    }
+
+    .query-section p {
+      margin: 0;
+      font-size: 0.9rem;
+      line-height: 1.4;
+    }
+
+    .chat-container {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 1rem;
+      overflow: hidden;
+    }
+
+    .form {
+      background: rgba(255, 255, 255, 0.2);
+      padding: 0.5rem;
+      display: flex;
+      height: 4rem;
+      box-sizing: border-box;
+      backdrop-filter: blur(10px);
+      border-top: 1px solid rgba(255, 255, 255, 0.3);
+    }
+
+    .input {
+      border: none;
+      padding: 0.75rem 1.25rem;
+      flex-grow: 1;
+      border-radius: 2rem;
+      margin: 0.5rem;
+      background-color: rgba(255, 255, 255, 0.8);
+      color: #333;
+      font-size: 1rem;
+    }
+
+    .input:focus {
+      outline: none;
+      box-shadow: 0 0 5px rgba(255, 255, 255, 0.5);
+    }
+
+    .form > button {
+      background: #2ecc71;
+      border: none;
+      padding: 0.75rem 1.5rem;
+      margin: 0.5rem;
+      border-radius: 2rem;
+      outline: none;
+      color: white;
+      font-weight: bold;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+
+    .form > button:hover {
+      background-color: #27ae60;
+    }
+
+    .messages {
+      list-style-type: none;
+      margin: 0;
+      padding: 1rem;
+      overflow-y: auto;
+      flex-grow: 1;
+    }
+
+    .messages > li {
+      padding: 0.75rem 1.25rem;
+      margin-bottom: 0.5rem;
+      border-radius: 0.5rem;
+    }
+
+    .messages > li:nth-child(odd) {
+      background: rgba(255, 255, 255, 0.1);
+    }
+
+    ::-webkit-scrollbar {
+      width: 8px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 4px;
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: rgba(255, 255, 255, 0.3);
+      border-radius: 4px;
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+      background: rgba(255, 255, 255, 0.4);
+    }
+  </style>
+</head>
+<body>
+  <!-- Left Panel - Top Queries -->
+  <div class="side-panel">
+    <div class="panel-header">Top Queries</div>
+    <div class="panel-content">
+      <div class="query-section">
+        <h3>Popular Topics</h3>
+        <p>Most discuss ed topics and trending conversations in  community.</p>
+      </div>
+      <div class="query-section">
+        <h3>Recent Questions</h3>
+        <p>Latest questions asked by  members.</p>
+      </div>
+      <div class="query-section">
+        <h3>Featured Discussions</h3>
+        <p>Highlighted conversations  important threads.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Middle Panel - Chat -->
+  <div class="chat-container">
+    <ul id="messages" class="messages"></ul>
+    <form id="form" class="form" action="">
+      <input id="input" class="input" autocomplete="off" placeholder="Enter your message..." />
+      <button>Send</button>
+    </form>
+  </div>
+
+  <!-- Right Panel - AI Queries -->
+  <div class="side-panel">
+    <div class="panel-header">AI Queries</div>
+    <div class="panel-content">
+      <div class="query-section">
+        <h3>AI Suggestions</h3>
+        <p>Smart recommendations and AI-generated insights.</p>
+      </div>
+      <div class="query-section">
+        <h3>Popular AI Topics</h3>
+        <p>Frequently discussed AI-related questions and topics.</p>
+      </div>
+      <div class="query-section">
+        <h3>AI Updates</h3>
+        <p>Latest AI features and improvements in the system.</p>
+      </div>
+    </div>
+  </div>
+
+  <script src="/socket.io/socket.io.js"></script>
+  <script>
+    var socket = io();
+    var form = document.getElementById('form');
+    var input = document.getElementById('input');
+    var userName = prompt('Please enter your name:');
+
+    form.addEventListener('submit', function(e) {
+      e.preventDefault();
+      if (input.value) {
+        const message = {
+          name: userName,
+          text: input.value
+        };
+        socket.emit('messagebyUser', message);
+        input.value = '';
+      }
+    });
+
+    socket.on('messagebyUser', function(message) {
+      var item = document.createElement('li');
+      item.textContent = message.name + ': ' + message.text;
+      document.getElementById('messages').appendChild(item);
+      var messageContainer = document.querySelector('.messages');
+      messageContainer.scrollTop = messageContainer.scrollHeight;
+    });
+  </script>
+</body>
+</html>
