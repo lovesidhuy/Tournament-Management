@@ -1,11 +1,8 @@
--- 1. Database Creation
+-- Database Creation
 CREATE DATABASE IF NOT EXISTS Tournament_Management;
 USE Tournament_Management;
 
--- 2. Main Tables
-
 -- Teams Table
--- Stores details about teams.
 CREATE TABLE IF NOT EXISTS Teams (
     Team_ID INT PRIMARY KEY,
     Team_Name VARCHAR(100) NOT NULL,
@@ -16,7 +13,6 @@ CREATE TABLE IF NOT EXISTS Teams (
 );
 
 -- Players Table
--- Tracks players associated with teams.
 CREATE TABLE IF NOT EXISTS Players (
     Player_ID INT PRIMARY KEY,
     Player_Name VARCHAR(100) NOT NULL,
@@ -28,7 +24,6 @@ CREATE TABLE IF NOT EXISTS Players (
 );
 
 -- Games Table
--- Records game-specific information.
 CREATE TABLE IF NOT EXISTS Games (
     Game_ID INT PRIMARY KEY,
     Game_Date DATE NOT NULL,
@@ -43,7 +38,6 @@ CREATE TABLE IF NOT EXISTS Games (
 );
 
 -- Sponsors Table
--- Holds sponsor information.
 CREATE TABLE IF NOT EXISTS Sponsors (
     Sponsor_ID INT PRIMARY KEY,
     Sponsor_Name VARCHAR(100) NOT NULL,
@@ -51,7 +45,7 @@ CREATE TABLE IF NOT EXISTS Sponsors (
     Contract_Duration VARCHAR(50)
 );
 
--- Sponsor_Teams Table 
+-- Sponsor_Teams Table
 CREATE TABLE IF NOT EXISTS Sponsor_Teams (
     Sponsor_ID INT,
     Team_ID INT,
@@ -69,10 +63,7 @@ CREATE TABLE IF NOT EXISTS Sponsor_Games (
     FOREIGN KEY (Game_ID) REFERENCES Games(Game_ID) ON DELETE CASCADE
 );
 
-
-
 -- SuperBowl Table
--- Tracks Super Bowl details, including the champions.
 CREATE TABLE IF NOT EXISTS SuperBowl (
     SuperBowl_ID INT PRIMARY KEY,
     AFC_Champion_Team_ID INT,
@@ -83,10 +74,7 @@ CREATE TABLE IF NOT EXISTS SuperBowl (
     FOREIGN KEY (Game_ID) REFERENCES Games(Game_ID) ON DELETE CASCADE
 );
 
--- 3. Supplemental Tables
-
 -- Weather Data Table
--- Logs weather conditions for games.
 CREATE TABLE IF NOT EXISTS Weather_Data (
     Weather_ID INT PRIMARY KEY,
     Game_ID INT,
@@ -99,7 +87,6 @@ CREATE TABLE IF NOT EXISTS Weather_Data (
 );
 
 -- Fan Demographics Table
--- Tracks fan data for marketing and analysis.
 CREATE TABLE IF NOT EXISTS Fan_Demographics (
     Demographic_ID INT PRIMARY KEY,
     Team_ID INT,
@@ -112,7 +99,6 @@ CREATE TABLE IF NOT EXISTS Fan_Demographics (
 );
 
 -- Economic Impact Data Table
--- Measures the economic impact of games.
 CREATE TABLE IF NOT EXISTS Economic_Impact (
     Impact_ID INT PRIMARY KEY,
     Game_ID INT,
@@ -125,13 +111,11 @@ CREATE TABLE IF NOT EXISTS Economic_Impact (
 );
 
 -- Create the Staff table
-
 CREATE TABLE IF NOT EXISTS Staff (
     Staff_no INT PRIMARY KEY NOT NULL,
     StaffName VARCHAR(100),
     Age INT,
-    Salary DECIMAL(10, 2)    
-
+    Salary DECIMAL(10, 2)
 );
 
 -- Create the Office table
@@ -148,12 +132,10 @@ CREATE TABLE IF NOT EXISTS Marketing_event (
     Staff_no INT,
     Office_no INT,
     Team_ID INT,
-    FOREIGN KEY (Staff_no) REFERENCES Staff ON DELETE CASCADE,
-    FOREIGN KEY (Office_no) REFERENCES Office ON DELETE CASCADE,
-    FOREIGN KEY (Team_ID) REFERENCES Teams ON DELETE CASCADE
+    FOREIGN KEY (Staff_no) REFERENCES Staff (Staff_no) ON DELETE CASCADE,
+    FOREIGN KEY (Office_no) REFERENCES Office (Office_no) ON DELETE CASCADE,
+    FOREIGN KEY (Team_ID) REFERENCES Teams (Team_ID) ON DELETE CASCADE
 );
-
- 
 
 -- Insert data into Teams table
 INSERT INTO Teams (Team_ID, Team_Name, City, Division, Conference, Historical_Performance) VALUES
@@ -188,12 +170,9 @@ INSERT INTO Games (Game_ID, Game_Date, Home_Team_ID, Away_Team_ID, Venue, Home_T
 (3, '2024-09-22', 5, 6, 'Lambeau Field', 17, 20, '49ers Win'),
 (4, '2024-09-29', 7, 8, 'M&T Bank Stadium', 27, 24, 'Ravens Win'),
 (5, '2024-10-06', 9, 10, 'Highmark Stadium', 14, 31, 'Giants Win'),
-(6, '2024-10-13', 2, 1, 'Gillette Stadium', 28, 27, 'Patriots Win'),
-(7, '2024-10-20', 4, 3, 'AT&T Stadium', 24, 35, 'Chiefs Win'),
-(8, '2024-10-27', 6, 5, 'Levi\'s Stadium', 21, 24, 'Packers Win'),
-(9, '2024-11-03', 8, 7, 'Acrisure Stadium', 14, 17, 'Ravens Win'),
-(10, '2024-11-10', 10, 9, 'MetLife Stadium', 27, 21, 'Giants Win');
+(6, '2024-10-13', 2, 1, 'Gillette Stadium', 28, 27, 'Patriots Win');
 
+-- Insert data into Sponsors table
 INSERT INTO Sponsors (Sponsor_ID, Sponsor_Name, Deal_Amount, Contract_Duration) VALUES
 (1, 'Nike', 150000000.00, '5 years'),
 (2, 'Pepsi', 200000000.00, '6 years'),
@@ -203,97 +182,64 @@ INSERT INTO Sponsors (Sponsor_ID, Sponsor_Name, Deal_Amount, Contract_Duration) 
 
 -- Insert data into Sponsor_Teams table
 INSERT INTO Sponsor_Teams (Sponsor_ID, Team_ID) VALUES
-(1, 1),
-(1, 2),
-(2, 3),
-(2, 4),
-(3, 5),
-(4, 6),
-(5, 7),
-(5, 8);
+(1, 1), (1, 2), (2, 3), (2, 4), (3, 5), (4, 6), (5, 7), (5, 8);
 
+-- Insert data into Weather_Data table
+INSERT INTO Weather_Data (Weather_ID, Game_ID, Weather_Condition, Temperature, Wind_Speed, Precipitation, Humidity) VALUES
+(1, 1, 'Clear', '75F', '10mph', '0%', '45%'),
+(2, 2, 'Rain', '60F', '15mph', '80%', '70%'),
+(3, 3, 'Snow', '32F', '20mph', '100%', '85%');
 
--- Insert data into Sponsor_Games table
-INSERT INTO Sponsor_Games (Sponsor_ID, Game_ID) VALUES
-(1, 1),
-(2, 2),
-(3, 3),
-(4, 4),
-(5, 5);
+-- Insert data into Economic_Impact table
+INSERT INTO Economic_Impact (Impact_ID, Game_ID, City, Total_Revenue, Ticket_Sales, Merchandise_Sales, Local_Economic_Impact) VALUES
+(1, 1, 'Philadelphia', 5000000.00, 2000000.00, 1500000.00, 1500000.00),
+(2, 2, 'Kansas City', 7500000.00, 3000000.00, 2000000.00, 2500000.00),
+(3, 3, 'Green Bay', 6500000.00, 2500000.00, 1800000.00, 2200000.00);
 
+-- Insert data into Fan_Demographics table
+INSERT INTO Fan_Demographics (Demographic_ID, Team_ID, Region, Average_Age, Gender_Percentage_Male, Average_Income, Fan_Base_Size) VALUES
+(1, 1, 'Northeast', 34, '60%', 75000.00, 1000000),
+(2, 2, 'Northeast', 36, '65%', 85000.00, 1200000),
+(3, 3, 'Midwest', 32, '58%', 68000.00, 950000);
 
--- Insert data into Playoffs table
-INSERT INTO Playoffs (Playoff_ID, Game_ID, Round) VALUES
-(1, 6, 'Wild Card'),
-(2, 7, 'Divisional Round'),
-(3, 8, 'Conference Championship'),
-(4, 9, 'Conference Championship'),
-(5, 10, 'Super Bowl');
+-- Insert data into Office table
+INSERT INTO Office (Office_no, office_location) VALUES
+(101, 'Blue Wing'), (102, 'Red Wing'), (103, 'Yellow Wing');
+
+-- Insert data into Staff table
+INSERT INTO Staff (Staff_no, StaffName, Age, Salary, Email) VALUES
+(1, 'Addle Ron', 30, 50000.00, NULL),
+(2, 'Cinnr Gow', 40, 600000.00, NULL),
+(3, 'Jai Rolsea', 35, 55000.00, NULL);
+
+-- Insert data into Marketing_event table
+INSERT INTO Marketing_event (Marketing_event_no, event_location, event_cost, Staff_no, Office_no, Team_ID) VALUES
+(201, 'Cactus', 2500.00, 1, 101, 7),
+(202, 'Browns', 2000.00, 2, 102, 8),
+(203, 'Rbs', 1777.00, 3, 103, 9);
 
 -- Insert data into SuperBowl table
 INSERT INTO SuperBowl (SuperBowl_ID, AFC_Champion_Team_ID, NFC_Champion_Team_ID, Game_ID) VALUES
 (1, 3, 5, 10);
 
 
--- Insert data into Weather_Data table
-INSERT INTO Weather_Data (Weather_ID, Game_ID, Weather_Condition, Temperature, Wind_Speed, Precipitation, Humidity) VALUES
-(1, 1, 'Clear', '75F', '10mph', '0%', '45%'),
-(2, 2, 'Rain', '60F', '15mph', '80%', '70%'),
-(3, 3, 'Snow', '32F', '20mph', '100%', '85%'),
-(4, 4, 'Cloudy', '55F', '5mph', '20%', '50%'),
-(5, 5, 'Clear', '80F', '8mph', '0%', '40%');
+-- Create View for SuperBowl Champions
+CREATE VIEW SuperBowlChampionView AS (
+    SELECT SB.SuperBowl_ID, 
+           T1.Team_Name AS AFC_Champion, T1.City AS AFC_City, 
+           T2.Team_Name AS NFC_Champion, T2.City AS NFC_City
+    FROM SuperBowl SB
+    JOIN Teams T1 ON SB.AFC_Champion_Team_ID = T1.Team_ID
+    JOIN Teams T2 ON SB.NFC_Champion_Team_ID = T2.Team_ID
+);
 
+-- Sample Query to Fetch Games and Outcomes
+SELECT Game_ID, Game_Date, Venue, Outcome FROM Games ORDER BY Game_Date DESC;
 
--- Insert data into Fan_Demographics table
-INSERT INTO Fan_Demographics (Demographic_ID, Team_ID, Region, Average_Age, Gender_Percentage_Male, Average_Income, Fan_Base_Size) VALUES
-(1, 1, 'Northeast', 34, '60%', 75000.00, 1000000),
-(2, 2, 'Northeast', 36, '65%', 85000.00, 1200000),
-(3, 3, 'Midwest', 32, '58%', 68000.00, 950000),
-(4, 4, 'South', 30, '62%', 72000.00, 1100000),
-(5, 5, 'Midwest', 29, '55%', 70000.00, 1050000),
-(6, 6, 'West', 33, '57%', 82000.00, 980000),
-(7, 7, 'Mid-Atlantic', 31, '61%', 71000.00, 1020000),
-(8, 8, 'Northeast', 35, '63%', 80000.00, 1150000);
+-- Query to Retrieve Economic Impact per City
+SELECT City, SUM(Total_Revenue) AS Total_Revenue FROM Economic_Impact GROUP BY City;
 
--- Insert  data into Staff table
-
-INSERT INTO Staff (Staff_no, StaffName, Age, Salary)
-VALUES
-(1, 'Addle Ron', 30, 50000.00),
-(2, 'cinnr gow', 40, 600000.00),
-(3, 'jai rolsea', 35, 55000.00);
-
--- Insert  data into Office table
-INSERT INTO Office (Office_no, office_location)
-VALUES
-(101, 'blue wing'),
-(102, 'red wing'),
-(103, 'yellow wing');
-
--- Insert  data into Marketing_event table
-
-INSERT INTO Marketing_event (Marketing_event_no, event_location, event_cost, Staff_no, Office_no, Team_ID)
-VALUES
-(201, 'Cactus', 1500.00, 1, 101, 7),
-(202, 'Browns ', 2000.00, 2, 102, 8),
-(203, 'Royals', 1200.00, 3, 103, 9);
-
-
-
-
-DESC TABLES;
-
-
-
-
-
-CREATE VIEW SuperBowlChampionView AS ( 
-SELECT SB.SuperBowl_ID, T1.Team_Name AS AFC_Champion, T1.City AS AFC_City, T2.Team_Name AS NFC_Champion, T2.City AS NFC_City
- FROM SuperBowl SB 
- JOIN 
- Teams T1 ON SB.AFC_Champion_Team_ID = T1.Team_ID 
- JOIN 
- Teams T2 ON SB.NFC_Champion_Team_ID = T2.Team_ID
- );
+-- Query to Fetch Players with Career Stats
+SELECT Player_Name, Position, Career_Statistics FROM Players ORDER BY Position;
 
 
